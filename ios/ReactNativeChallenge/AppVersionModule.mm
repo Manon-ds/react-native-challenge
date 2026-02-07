@@ -1,0 +1,66 @@
+#import <Foundation/Foundation.h>
+#import <React/RCTBridgeModule.h>
+
+#ifdef RCT_NEW_ARCH_ENABLED
+#import <AppVersionModuleSpec/AppVersionModuleSpec.h>
+#endif
+
+@interface AppVersionModule : NSObject
+#ifdef RCT_NEW_ARCH_ENABLED
+                              <NativeAppVersionSpec>
+#else
+                              <RCTBridgeModule>
+#endif
+@end
+
+@implementation AppVersionModule
+
+RCT_EXPORT_MODULE()
+
++ (BOOL)requiresMainQueueSetup {
+  return NO;
+}
+
+#ifdef RCT_NEW_ARCH_ENABLED
+- (facebook::react::ModuleConstants<JS::NativeAppVersion::Constants::Builder>)
+    constantsToExport {
+  return [self getConstants];
+}
+
+- (facebook::react::ModuleConstants<JS::NativeAppVersion::Constants::Builder>)
+    getConstants {
+  NSDictionary *constants = @{
+    @"appVersion" : [self getAppVersion],
+    @"buildNumber" : [self getBuildNumber]
+  };
+  return facebook::react::ModuleConstants<
+      JS::NativeAppVersion::Constants::Builder>(
+      JS::NativeAppVersion::Constants::fromUnsafeRawValue(constants));
+}
+#else
+- (NSDictionary *)constantsToExport {
+  return @{
+    @"appVersion" : [self getAppVersion],
+    @"buildNumber" : [self getBuildNumber]
+  };
+}
+#endif
+
+- (NSString *)getAppVersion {
+  NSDictionary *infoDictionary = [[NSBundle mainBundle] infoDictionary];
+  return infoDictionary[@"CFBundleShortVersionString"] ?: @"Unknown";
+}
+
+- (NSString *)getBuildNumber {
+  NSDictionary *infoDictionary = [[NSBundle mainBundle] infoDictionary];
+  return infoDictionary[@"CFBundleVersion"] ?: @"Unknown";
+}
+
+#ifdef RCT_NEW_ARCH_ENABLED
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
+    (const facebook::react::ObjCTurboModule::InitParams &)params {
+  return std::make_shared<facebook::react::NativeAppVersionSpecJSI>(params);
+}
+#endif
+
+@end

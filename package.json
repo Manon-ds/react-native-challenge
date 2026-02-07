@@ -37,5 +37,14 @@
   },
   "engines": {
     "node": ">=20"
+  },
+  "codegenConfig": {
+    "name": "AppVersionModuleSpec",
+    "type": "modules",
+    "jsSrcsDir": "src/modules",
+    "android": {
+      "javaPackageName": "com.reactnativechallenge.appversion"
+    },
+    "ios": {}
   }
 }
