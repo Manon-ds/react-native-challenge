@@ -18,10 +18,11 @@
 RCT_EXPORT_MODULE()
 
 + (BOOL)requiresMainQueueSetup {
-  return NO;
+  return NO; // Can be initialized on background thread
 }
 
 #ifdef RCT_NEW_ARCH_ENABLED
+// New Architecture (TurboModule) implementation
 - (facebook::react::ModuleConstants<JS::NativeAppVersion::Constants::Builder>)
     constantsToExport {
   return [self getConstants];
@@ -29,15 +30,13 @@ RCT_EXPORT_MODULE()
 
 - (facebook::react::ModuleConstants<JS::NativeAppVersion::Constants::Builder>)
     getConstants {
-  NSDictionary *constants = @{
-    @"appVersion" : [self getAppVersion],
-    @"buildNumber" : [self getBuildNumber]
-  };
-  return facebook::react::ModuleConstants<
+  return facebook::react::typedConstants<
       JS::NativeAppVersion::Constants::Builder>(
-      JS::NativeAppVersion::Constants::fromUnsafeRawValue(constants));
+      {.appVersion = [self getAppVersion],
+       .buildNumber = [self getBuildNumber]});
 }
 #else
+// Old Architecture (Bridge) implementation
 - (NSDictionary *)constantsToExport {
   return @{
     @"appVersion" : [self getAppVersion],
