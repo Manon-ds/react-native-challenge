@@ -19,11 +19,11 @@ class AppVersionModule(reactContext: ReactApplicationContext) : NativeAppVersion
                       0
               )
 
-      constants["appVersion"] = packageInfo.versionName ?: "Unknown"
+      constants["appVersion"] = packageInfo.versionName ?: ""
       constants["buildNumber"] = packageInfo.versionCode.toString()
     } catch (e: Exception) {
-      constants["appVersion"] = "Unknown"
-      constants["buildNumber"] = "Unknown"
+      constants["appVersion"] = ""
+      constants["buildNumber"] = ""
     }
 
     return constants

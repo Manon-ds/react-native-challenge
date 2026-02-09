@@ -1,16 +1,10 @@
 import NativeAppVersion from './NativeAppVersion';
 
-export interface AppVersionInfo {
-  appVersion: string;
-  buildNumber: string;
-}
-
 export const AppVersion = {
   getFullVersion: (): string => {
-    const { appVersion, buildNumber } = NativeAppVersion?.getConstants() ?? {
-      appVersion: 'Unknown',
-      buildNumber: 'Unknown'
-    };
+    const constants = NativeAppVersion?.getConstants();
+    const appVersion = constants?.appVersion || 'Unknown';
+    const buildNumber = constants?.buildNumber || 'Unknown';
     return `${appVersion} (${buildNumber})`;
   }
 }

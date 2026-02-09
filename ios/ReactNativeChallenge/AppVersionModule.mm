@@ -1,16 +1,7 @@
 #import <Foundation/Foundation.h>
-#import <React/RCTBridgeModule.h>
-
-#ifdef RCT_NEW_ARCH_ENABLED
 #import <AppVersionModuleSpec/AppVersionModuleSpec.h>
-#endif
 
-@interface AppVersionModule : NSObject
-#ifdef RCT_NEW_ARCH_ENABLED
-                              <NativeAppVersionSpec>
-#else
-                              <RCTBridgeModule>
-#endif
+@interface AppVersionModule : NSObject <NativeAppVersionSpec>
 @end
 
 @implementation AppVersionModule
@@ -18,11 +9,9 @@
 RCT_EXPORT_MODULE()
 
 + (BOOL)requiresMainQueueSetup {
-  return NO; // Can be initialized on background thread
+  return NO;
 }
 
-#ifdef RCT_NEW_ARCH_ENABLED
-// New Architecture (TurboModule) implementation
 - (facebook::react::ModuleConstants<JS::NativeAppVersion::Constants::Builder>)
     constantsToExport {
   return [self getConstants];
@@ -35,31 +24,20 @@ RCT_EXPORT_MODULE()
       {.appVersion = [self getAppVersion],
        .buildNumber = [self getBuildNumber]});
 }
-#else
-// Old Architecture (Bridge) implementation
-- (NSDictionary *)constantsToExport {
-  return @{
-    @"appVersion" : [self getAppVersion],
-    @"buildNumber" : [self getBuildNumber]
-  };
-}
-#endif
 
 - (NSString *)getAppVersion {
   NSDictionary *infoDictionary = [[NSBundle mainBundle] infoDictionary];
-  return infoDictionary[@"CFBundleShortVersionString"] ?: @"Unknown";
+  return infoDictionary[@"CFBundleShortVersionString"] ?: @"";
 }
 
 - (NSString *)getBuildNumber {
   NSDictionary *infoDictionary = [[NSBundle mainBundle] infoDictionary];
-  return infoDictionary[@"CFBundleVersion"] ?: @"Unknown";
+  return infoDictionary[@"CFBundleVersion"] ?: @"";
 }
 
-#ifdef RCT_NEW_ARCH_ENABLED
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
     (const facebook::react::ObjCTurboModule::InitParams &)params {
   return std::make_shared<facebook::react::NativeAppVersionSpecJSI>(params);
 }
-#endif
 
 @end

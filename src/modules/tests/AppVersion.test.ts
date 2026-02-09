@@ -19,4 +19,24 @@ describe('AppVersion', () => {
 
     expect(AppVersion.getFullVersion()).toBe('Unknown (Unknown)');
   });
+
+  it('returns "Unknown" when module returns empty strings', () => {
+    const NativeAppVersion = jest.requireMock('../NativeAppVersion');
+    NativeAppVersion.getConstants.mockReturnValue({
+      appVersion: '',
+      buildNumber: ''
+    });
+
+    expect(AppVersion.getFullVersion()).toBe('Unknown (Unknown)');
+  });
+
+  it('handles partial empty values', () => {
+    const NativeAppVersion = jest.requireMock('../NativeAppVersion');
+    NativeAppVersion.getConstants.mockReturnValue({
+      appVersion: '1.0.0',
+      buildNumber: ''
+    });
+
+    expect(AppVersion.getFullVersion()).toBe('1.0.0 (Unknown)');
+  });
 });
