@@ -27,12 +27,20 @@ RCT_EXPORT_MODULE()
 
 - (NSString *)getAppVersion {
   NSDictionary *infoDictionary = [[NSBundle mainBundle] infoDictionary];
-  return infoDictionary[@"CFBundleShortVersionString"] ?: @"";
+  NSString *version = infoDictionary[@"CFBundleShortVersionString"];
+  if (!version) {
+    NSLog(@"[AppVersionModule] CFBundleShortVersionString not found in bundle");
+  }
+  return version ?: @"";
 }
 
 - (NSString *)getBuildNumber {
   NSDictionary *infoDictionary = [[NSBundle mainBundle] infoDictionary];
-  return infoDictionary[@"CFBundleVersion"] ?: @"";
+  NSString *buildNumber = infoDictionary[@"CFBundleVersion"];
+  if (!buildNumber) {
+    NSLog(@"[AppVersionModule] CFBundleVersion not found in bundle");
+  }
+  return buildNumber ?: @"";
 }
 
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
