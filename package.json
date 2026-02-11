@@ -7,7 +7,8 @@
     "ios": "react-native run-ios",
     "lint": "eslint .",
     "start": "react-native start",
-    "test": "jest"
+    "test": "jest",
+    "e2e": "maestro test .maestro/"
   },
   "dependencies": {
     "@react-native/new-app-screen": "0.83.1",

@@ -1,0 +1,9 @@
+appId: org.reactjs.native.example.ReactNativeChallenge
+---
+- launchApp
+- extendedWaitUntil:
+    visible: "Shuffle restaurants"
+    timeout: 30000
+- assertNotVisible: "Order restaurants"
+- tapOn:
+    text: "Visit .* website"
