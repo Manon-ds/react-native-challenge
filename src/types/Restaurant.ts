@@ -1,22 +1,22 @@
 
 export interface RestaurantList {
-  "data": Restaurant
+  data: Restaurant
 }
 
 export interface Restaurant {
-  "restaurant": {
-    "items": RestaurantItem[],
+  restaurant: {
+    items: RestaurantItem[],
   }
 }
 
 export interface RestaurantItem {
-  "name": string,
-  "url": string,
-  "geo": {
-    "address": {
-      "streetAddress": string,
-      "addressLocality": string,
-      "postalCode": string
+  name: string,
+  url: string,
+  geo: {
+    address: {
+      streetAddress: string,
+      addressLocality: string,
+      postalCode: string
     }
   }
 }

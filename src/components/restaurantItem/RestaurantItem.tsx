@@ -1,6 +1,7 @@
 import React from 'react';
-import { View, Text, StyleSheet, Linking } from 'react-native';
+import { View, Text, StyleSheet, Linking, Pressable } from 'react-native';
 import { RestaurantItem as RestaurantItemType } from '../../types/Restaurant';
+import { typography, shadows, colors, spacing } from '../../theme/theme';
 
 interface Props {
   restaurant: RestaurantItemType;
@@ -13,9 +14,18 @@ const RestaurantItem = ({ restaurant }: Props) => {
   return (
     <View style={styles.container}>
       <View style={styles.info}>
-        <Text style={styles.name} onPress={() => Linking.openURL(url)}>
-          {name}
-        </Text>
+        <Pressable
+          style={({ pressed }) => [
+            pressed ? styles.btnPress : styles.btnNormal,
+            styles.pressable,
+          ]}
+          onPress={() => Linking.openURL(url)}
+          accessibilityRole="link"
+          accessibilityLabel={`Visit ${name} website`}
+          accessibilityHint="Opens the restaurant website"
+        >
+          <Text style={styles.title}>{name}</Text>
+        </Pressable>
         <Text style={styles.address}>
           {streetAddress}, {postalCode} {addressLocality}
         </Text>
@@ -27,28 +37,36 @@ const RestaurantItem = ({ restaurant }: Props) => {
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    padding: 12,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: '#ccc',
-  },
-  image: {
-    width: 80,
-    height: 80,
-    borderRadius: 8,
+    padding: spacing.md,
   },
   info: {
     flex: 1,
-    marginLeft: 12,
     justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'column',
+    ...shadows.card,
   },
-  name: {
-    fontSize: 16,
-    fontWeight: '600',
+  pressable: {
+    justifyContent: 'center',
+    paddingHorizontal: spacing.sm,
+    minHeight: 44,
+  },
+  title: {
+    ...typography.restaurantTitle,
   },
   address: {
-    fontSize: 13,
-    color: '#666',
-    marginTop: 4,
+    ...typography.restaurantAddress,
+    marginTop: spacing.xs,
+    backgroundColor: colors.contrast,
+    paddingBlock: spacing.md,
+    textAlign: 'center',
+    color: colors.text,
+  },
+  btnNormal: {
+    backgroundColor: colors.highlight,
+  },
+  btnPress: {
+    backgroundColor: colors.contrast,
   },
 });
 

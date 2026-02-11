@@ -70,3 +70,76 @@ describe('useFetchRestaurants', () => {
     expect(result.current.loading).toBe(false);
   });
 });
+
+describe('useFetchRestaurants - timeout behavior', () => {
+  beforeEach(() => {
+    jest.useFakeTimers();
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
+  it('sets timeout error when request exceeds 30 seconds', async () => {
+    globalThis.fetch = jest.fn(() => new Promise(() => {})) as jest.Mock;
+
+    const { result } = renderHook(() =>
+      useFetchRestaurants<RestaurantList>(TEST_URL),
+    );
+
+    expect(result.current.loading).toBe(true);
+    expect(result.current.error).toBe('');
+
+    jest.advanceTimersByTime(30000);
+
+    await waitFor(() => {
+      expect(result.current.error).toBe(
+        'Request timed out - please check your connection',
+      );
+    });
+
+    expect(result.current.loading).toBe(false);
+    expect(result.current.restaurants).toBeNull();
+  });
+
+  it('clears timeout when fetch completes before timeout', async () => {
+    jest.useRealTimers();
+    mockFetchSuccess(mockRestaurantList);
+
+    const { result } = renderHook(() =>
+      useFetchRestaurants<RestaurantList>(TEST_URL),
+    );
+
+    await waitFor(() => {
+      expect(result.current.restaurants).toEqual(mockRestaurantList);
+    });
+
+    expect(result.current.loading).toBe(false);
+    expect(result.current.error).toBe('');
+  });
+
+  it('silently handles abort on unmount', async () => {
+    jest.useRealTimers();
+    globalThis.fetch = jest.fn(
+      () =>
+        new Promise(resolve => {
+          setTimeout(() => {
+            resolve({
+              ok: true,
+              json: () => Promise.resolve(mockRestaurantList),
+            });
+          }, 1000);
+        }),
+    ) as jest.Mock;
+
+    const { result, unmount } = renderHook(() =>
+      useFetchRestaurants<RestaurantList>(TEST_URL),
+    );
+
+    expect(result.current.loading).toBe(true);
+    unmount();
+
+    await new Promise<void>(resolve => setTimeout(resolve, 100));
+    expect(result.current.error).toBe('');
+  });
+});
